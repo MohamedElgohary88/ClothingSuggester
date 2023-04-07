@@ -14,7 +14,23 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.get.setOnClickListener {
-            //getRequestUsingOkHttp()
+            getRequestUsingOkHttp()
         }
+    }
+    private fun getRequestUsingOkHttp() {
+        val request = Request.Builder().url("").build()
+        client.newCall(request).enqueue(object :Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    binding.textView.text = e.message.toString()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    binding.textView.text = response.body?.string().toString()
+                }
+            }
+        })
     }
 }
