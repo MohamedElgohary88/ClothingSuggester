@@ -1,4 +1,4 @@
-package com.example.clothingsuggester.data
+package com.example.clothingsuggester.data.success
 
 data class Request(
     val type: String,
