@@ -1,18 +1,16 @@
 package com.example.clothingsuggester
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.graphics.drawable.toDrawable
 import com.bumptech.glide.Glide
 import com.example.clothingsuggester.data.success.WeatherData
 import com.example.clothingsuggester.databinding.ActivityMainBinding
+import com.example.clothingsuggester.util.Constants
 import com.google.gson.Gson
 import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONObject
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -31,13 +29,11 @@ class MainActivity : AppCompatActivity() {
                     getRequestUsingOkHttp(binding.country.query.toString())
                 }
             } catch (e: Exception) {
-                // Handle the exception here
                 Toast.makeText(this, "An error occurred: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
     }
-
     private fun getRequestUsingOkHttp(country: String) {
         val url = HttpUrl.Builder()
             .scheme("http")
@@ -54,7 +50,6 @@ class MainActivity : AppCompatActivity() {
                     binding.textTemperature.text = e.message.toString()
                 }
             }
-
             override fun onResponse(call: Call, response: Response) {
                 try {
                     response.body?.string()?.let { jsonString ->
@@ -64,8 +59,9 @@ class MainActivity : AppCompatActivity() {
                             binding.textStatus.text = result.current.weather_descriptions[0]
                             binding.textCountry.text = result.location.name
                             binding.textTown.text = result.location.region
-                            setWeatherIcons(result.current.weather_icons,binding.imageView)
+                            setWeatherIcons(result.current.weather_icons, binding.imageView)
                             setClothesImage(result.current.temperature)
+                            // getClothesImage(result.current.temperature)
                         }
                     }
                 } catch (e: Exception) {
@@ -76,17 +72,44 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-
-    fun setClothesImage(temperature:Int) {
-        when (temperature) {
-            in -20..15 -> { binding.clothesImage.setImageResource(R.drawable.jacket)}
-            in 15..25 -> { binding.clothesImage.setImageResource(R.drawable.sweat) }
-            in 25..50 -> { binding.clothesImage.setImageResource(R.drawable.shirt) }
+    fun getClothesImage(temperature: Int): Int {
+        return when (temperature) {
+            in -20..15 -> R.drawable.jacket
+            in 15..25 -> R.drawable.sweat
+            in 25..50 -> R.drawable.shirt
+            else -> R.drawable.jacket // default value
         }
     }
+    fun setClothesImage(temperature: Int) {
+        if (isSameImageDisplayedToday(temperature)) {
+            binding.clothesImage.setImageResource(R.drawable.empty)
+        } else {
+            val drawableId = getClothesImage(temperature)
+            binding.clothesImage.setImageResource(drawableId)
+            saveImage(temperature)
+        }
+    }
+    private fun saveImage(temperature: Int) {
+        val drawableId = getClothesImage(temperature).toString()
+        val saveShared = this@MainActivity.getSharedPreferences(Constants.SHARED_NAME, Context.MODE_PRIVATE)
+        val editor = saveShared.edit()
+        editor.putString(Constants.KEY_IMAGE, drawableId)
+        editor.apply()
+    }
+    private fun getSavedImageDrawableId(): Int {
+        val getShared = this@MainActivity.getSharedPreferences(Constants.SHARED_NAME, Context.MODE_PRIVATE)
+        val drawableId = getShared.getString(Constants.KEY_IMAGE, R.drawable.jacket.toString()) // default value is jacket
+        return drawableId?.toInt() ?: R.drawable.jacket // fallback to default value if unable to convert
+    }
+    private fun isSameImageDisplayedToday(temperature: Int): Boolean {
+        val savedDrawableId = getSavedImageDrawableId()
+        val currentDrawableId = getClothesImage(temperature)
+        return savedDrawableId.equals(currentDrawableId)
+    }
+
     fun setWeatherIcons(imageUrl: List<String>, imageView: ImageView) {
         Glide.with(imageView.context).load(imageUrl[0]).placeholder(R.drawable.ic_download)
             .into(imageView)
     }
 }
+
