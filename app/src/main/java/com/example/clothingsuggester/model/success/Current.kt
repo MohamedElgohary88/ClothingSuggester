@@ -1,4 +1,4 @@
-package com.example.clothingsuggester.data.success
+package com.example.clothingsuggester.model.success
 
 data class Current(
     val temperature: Int,
