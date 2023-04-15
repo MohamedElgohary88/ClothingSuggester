@@ -1,4 +1,4 @@
-package com.example.clothingsuggester.data.error
+package com.example.clothingsuggester.model.error
 
 data class ErrorInfo(
     val code: Int,
