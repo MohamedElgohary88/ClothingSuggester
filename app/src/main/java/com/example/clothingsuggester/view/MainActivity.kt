@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     private fun setClothesImage(temperature: Int, date: String) {
-        if (getSavedDate() != date) {
+        if (compareDate(date)) {
             if (!isSameImageDisplayedToday(temperature)) {
                 val drawableId = getClothesImage(temperature)
                 binding.clothesImage.setImageResource(drawableId)
