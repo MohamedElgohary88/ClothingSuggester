@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), MainView {
             if (checkImageSaved()) {
                 val drawableId = clothesData.getClothesImage(temperature)
                 binding.clothesImage.setImageResource(drawableId)
+                saveImage(drawableId)
             } else {
                 binding.clothesImage.setImageResource(getSavedImage())
             }
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private fun saveImage(temperature: Int) {
         val saveShared =
-            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
         val editor = saveShared.edit()
         val drawableId = clothesData.getClothesImage(temperature)
         editor.putInt(Constants.KEY_IMAGE, drawableId)
@@ -75,14 +76,16 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private fun getSavedImage(): Int {
         val getShared =
-            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
         return getShared.getInt(Constants.KEY_IMAGE, 0)
     }
 
     private fun checkImageSaved(): Boolean {
         val sharedPreferences =
-            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
-        return sharedPreferences.all.isEmpty()
+            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+        if (sharedPreferences.all.isEmpty()) {
+            return true
+        } else return false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
