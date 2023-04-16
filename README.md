@@ -1,4 +1,5 @@
-Clothing Suggester App
+<span style="font-size:24px">Clothing Suggester App</span>
+
 The Clothing Suggester App is a personal clothing helper app that suggests suitable clothing to wear based on the current weather in your city. It uses an API to fetch the weather data and displays clothing suggestions based on predefined temperature ranges. The app also keeps track of the clothes you have worn in the past few days to avoid repeating outfits.
 
 Features
