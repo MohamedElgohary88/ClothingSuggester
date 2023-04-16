@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity(), MainView {
     private val presenter = MainPresenter()
     private val clothesData = ClothesData()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,6 +63,7 @@ class MainActivity : AppCompatActivity(), MainView {
             saveImage(drawableId)
         }
     }
+
     private fun saveImage(temperature: Int) {
         val saveShared =
             this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity(), MainView {
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return currentDate.format(dateFormatter)
     }
+
     override fun onFailure() {
         setVisibility(binding.lottieNoNetwork, true)
         setVisibility(binding.constraintTop, false)

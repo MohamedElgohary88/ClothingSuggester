@@ -1,8 +1,5 @@
 package com.example.clothingsuggester.presenter
 
-import android.widget.ImageView
-import com.bumptech.glide.Glide
-import com.example.clothingsuggester.R
 import com.example.clothingsuggester.model.success.WeatherData
 import com.example.clothingsuggester.util.Constants
 import com.example.clothingsuggester.view.MainView
@@ -20,6 +17,7 @@ class MainPresenter {
             override fun onFailure(call: Call, e: IOException) {
                 view.onFailure()
             }
+
             override fun onResponse(call: Call, response: Response) {
                 try {
                     response.body?.string()?.let { jsonString ->
