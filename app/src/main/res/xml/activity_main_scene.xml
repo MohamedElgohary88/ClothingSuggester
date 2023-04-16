@@ -8,6 +8,10 @@
         motion:constraintSetStart="@id/start"
         motion:duration="1000">
        <KeyFrameSet>
+           <KeyAttribute
+               motion:motionTarget="@+id/constraintTop"
+               motion:framePosition="100"
+               android:alpha="1" />
        </KeyFrameSet>
         <OnSwipe motion:touchAnchorId="@+id/constraintBottom" />
     </Transition>
@@ -20,18 +24,9 @@
             android:id="@+id/image_weather"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.1dp"
             android:visibility="visible"
             motion:layout_constraintTop_toBottomOf="@+id/constraintTop"
-            motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp" />
-        <Constraint
-            android:id="@+id/constraintTop"
-            motion:layout_constraintEnd_toEndOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:visibility="visible"
-            motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp" />
     </ConstraintSet>

@@ -17,7 +17,6 @@ class ClothesData {
         winterClothes.add(6, R.drawable.jacket_6)
         winterClothes.add(7,R.drawable.jacket_7)
 
-
         summerClothes.add(0, R.drawable.summer_1)
         summerClothes.add(1, R.drawable.summer_2)
         summerClothes.add(2, R.drawable.summer_3)

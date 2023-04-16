@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/lato"
-            android:text="Tanta"
+            android:text="@string/tanta"
             android:textColor="@color/white"
             android:textSize="32sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/lato"
-            android:hint="32"
+            android:hint="@string/_32"
             android:text="32°"
             android:textColor="@color/white"
             android:textSize="48sp"
@@ -55,7 +55,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/lato"
             android:gravity="center"
-            android:text="Mostly Clear"
+            android:text="@string/mostly_clear"
             android:textColor="@color/white"
             android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="@+id/text_temperature"
@@ -70,7 +70,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/lato"
             android:gravity="center"
-            android:text="15-4-2023"
+            android:text="@string/_15_4_2023"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,6 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,17 +96,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintBottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:background="@drawable/card_background"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_weather">
+        app:layout_constraintTop_toBottomOf="@id/image_weather">
 
         <View
             android:id="@+id/view"
             android:layout_width="60dp"
-            android:layout_height="2dp"
-            android:layout_margin="8dp"
+            android:layout_height="4dp"
+            android:layout_margin="16dp"
             android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -129,7 +132,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:fontFamily="@font/lato"
             android:text="@string/sentence_1"
             android:textColor="@color/white"
@@ -141,14 +145,29 @@
         <ImageView
             android:id="@+id/clothes_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
-            app:layout_constraintTop_toTopOf="@id/textViewPull"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPull" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_no_network"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBaseline_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/no_wifi" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
