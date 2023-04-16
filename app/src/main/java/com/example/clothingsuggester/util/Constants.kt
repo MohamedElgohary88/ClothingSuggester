@@ -1,4 +1,4 @@
-package com.example.clothingsuggester.view.util
+package com.example.clothingsuggester.util
 
 import com.example.clothingsuggester.BuildConfig
 import okhttp3.HttpUrl
@@ -12,9 +12,7 @@ object Constants {
         .addQueryParameter("query", country)
         .build()
 
-    const val SHARED_IMAGE = "My_IMAGE"
+    const val MY_SHARED = "My_SHARED"
     const val KEY_IMAGE = "Key_Image"
 
-    const val SHARED_DATE = "My_DATE"
-    const val KEY_DATE = "Key_DATE"
 }

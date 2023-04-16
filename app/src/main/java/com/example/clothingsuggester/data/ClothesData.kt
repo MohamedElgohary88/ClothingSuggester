@@ -17,7 +17,6 @@ class ClothesData {
         winterClothes.add(6, R.drawable.jacket_6)
         winterClothes.add(7,R.drawable.jacket_7)
 
-
         summerClothes.add(0, R.drawable.summer_1)
         summerClothes.add(1, R.drawable.summer_2)
         summerClothes.add(2, R.drawable.summer_3)
@@ -35,6 +34,12 @@ class ClothesData {
         autumnClothes.add(5, R.drawable.autmn_5)
         autumnClothes.add(6, R.drawable.autmn_6)
         autumnClothes.add(7, R.drawable.autmn_7)
-
+    }
+    fun getClothesImage(temperature: Int): Int {
+        return when (temperature) {
+            in -40..15 -> winterClothes.random()
+            in 15..25 -> autumnClothes.random()
+            else -> summerClothes.random()
+        }
     }
 }

@@ -2,101 +2,38 @@ package com.example.clothingsuggester.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
-import com.bumptech.glide.Glide
+import android.util.Log
+import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.lottie.LottieAnimationView
 import com.example.clothingsuggester.R
-import com.example.clothingsuggester.model.success.WeatherData
-import com.example.clothingsuggester.databinding.ActivityMainBinding
 import com.example.clothingsuggester.data.ClothesData
+import com.example.clothingsuggester.databinding.ActivityMainBinding
+import com.example.clothingsuggester.model.success.WeatherData
 import com.example.clothingsuggester.presenter.MainPresenter
-import com.example.clothingsuggester.view.util.Constants
+import com.example.clothingsuggester.util.Constants
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity(), MainView {
+
     lateinit var binding: ActivityMainBinding
     private val presenter = MainPresenter()
     private val clothesData = ClothesData()
-    val LOG_TAG = "MainActivity"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         presenter.view = this
-        setUp()
+        presenter.getRequestUsingOkHttp("tanta")
     }
 
-    private fun setUp() {
-        binding.get.setOnClickListener {
-            presenter.getRequestUsingOkHttp(binding.country.query.toString())
-        }
-    }
-
-    private fun getClothesImage(temperature: Int): Int {
-        return when (temperature) {
-            in -40..15 -> clothesData.winterClothes.random()
-            in 15..25 -> clothesData.autumnClothes.random()
-            else -> clothesData.summerClothes.random()
-        }
-    }
-
-    private fun setClothesImage(temperature: Int, date: String) {
-        if (compareDate(date)) {
-            if (!isSameImageDisplayedToday(temperature)) {
-                val drawableId = getClothesImage(temperature)
-                binding.clothesImage.setImageResource(drawableId)
-                saveImage(temperature)
-            } else {
-                setClothesImage(temperature, date)
-            }
-        } else {
-            binding.clothesImage.setImageResource(getSavedImageDrawableId())
-        }
-
-    }
-
-    private fun isSameImageDisplayedToday(temperature: Int): Boolean {
-        val savedDrawableId = getSavedImageDrawableId()
-        val currentDrawableId = getClothesImage(temperature)
-        return savedDrawableId == currentDrawableId
-    }
-
-    private fun saveImage(temperature: Int) {
-        val drawableId = getClothesImage(temperature)
-        val saveShared =
-            this@MainActivity.getSharedPreferences(Constants.SHARED_IMAGE, Context.MODE_PRIVATE)
-        val editor = saveShared.edit()
-        editor.putInt(Constants.KEY_IMAGE, drawableId)
-        editor.apply()
-    }
-
-    private fun getSavedImageDrawableId(): Int {
-        val getShared =
-            this@MainActivity.getSharedPreferences(Constants.SHARED_IMAGE, Context.MODE_PRIVATE)
-        return getShared.getInt(Constants.KEY_IMAGE, R.drawable.jacket)
-    }
-
-    private fun compareDate(date: String): Boolean {
-        val savedDate = getSavedDate()
-        return savedDate == date
-    }
-
-    private fun saveDate(Date: String?) {
-        val saveShared =
-            this@MainActivity.getSharedPreferences(Constants.SHARED_DATE, Context.MODE_PRIVATE)
-        val editor = saveShared.edit()
-        editor.putString(Constants.KEY_DATE, Date)
-        editor.apply()
-    }
-
-    private fun getSavedDate(): String? {
-        val getShared =
-            this@MainActivity.getSharedPreferences(Constants.SHARED_DATE, Context.MODE_PRIVATE)
-        return getShared.getString(Constants.KEY_DATE, Constants.SHARED_DATE)
-    }
-
-
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun setData(result: WeatherData) {
         val date = result.location.localtime.take(10)
@@ -104,18 +41,91 @@ class MainActivity : AppCompatActivity(), MainView {
         runOnUiThread {
             binding.textTemperature.text = " $temperature C"
             binding.textStatus.text = result.current.weather_descriptions[0]
-            binding.textCountry.text = result.location.name
             binding.textTown.text = result.location.region
             binding.textDate.text = date
-            saveDate(date).toString()
-            setWeatherIcons(result.current.weather_icons, binding.imageView)
             setClothesImage(temperature, date)
-            // getClothesImage(result.current.temperature)
+            Log.d("Mimo", " Api -> $date ------- Locale -> ${getLocalDate()}")
+            setWeatherImage(binding.imageWeather, temperature)
         }
     }
 
-    private fun setWeatherIcons(imageUrl: List<String>, imageView: ImageView) {
-        Glide.with(imageView.context).load(imageUrl[0]).placeholder(R.drawable.ic_download)
-            .into(imageView)
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setClothesImage(temperature: Int, date: String) {
+        if (compareDate(date)) {
+            if (checkImageSaved()) {
+                val drawableId = clothesData.getClothesImage(temperature)
+                binding.clothesImage.setImageResource(drawableId)
+            } else {
+                binding.clothesImage.setImageResource(getSavedImage())
+            }
+        } else {
+            val drawableId = clothesData.getClothesImage(temperature)
+            binding.clothesImage.setImageResource(drawableId)
+            saveImage(drawableId)
+        }
+    }
+    private fun saveImage(temperature: Int) {
+        val saveShared =
+            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+        val editor = saveShared.edit()
+        val drawableId = clothesData.getClothesImage(temperature)
+        editor.putInt(Constants.KEY_IMAGE, drawableId)
+        editor.apply()
+    }
+
+    private fun getSavedImage(): Int {
+        val getShared =
+            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+        return getShared.getInt(Constants.KEY_IMAGE, 0)
+    }
+
+    private fun checkImageSaved(): Boolean {
+        val sharedPreferences =
+            this.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
+        return sharedPreferences.all.isEmpty()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun compareDate(apiDate: String): Boolean {
+        val localeDate = getLocalDate()
+        return localeDate == apiDate.take(10)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getLocalDate(): String {
+        val currentDate = LocalDate.now()
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return currentDate.format(dateFormatter)
+    }
+    override fun onFailure() {
+        setVisibility(binding.lottieNoNetwork, true)
+        setVisibility(binding.constraintTop, false)
+        setVisibility(binding.constraintBottom, false)
+        setVisibility(binding.imageWeather, false)
+    }
+
+    private fun setVisibility(view: View, visibility: Boolean) {
+        view.visibility = if (visibility) {
+            View.VISIBLE
+        } else {
+            View.INVISIBLE
+        }
+    }
+
+    private fun setWeatherImage(lottieAnimationView: LottieAnimationView, temperature: Int) {
+        when (temperature) {
+            in -40..15 -> {
+                lottieAnimationView.setAnimation(R.raw.rainy)
+                lottieAnimationView.playAnimation()
+            }
+            in 15..25 -> {
+                lottieAnimationView.setAnimation(R.raw.cloudy)
+                lottieAnimationView.playAnimation()
+            }
+            else -> {
+                lottieAnimationView.setAnimation(R.raw.sunny)
+                lottieAnimationView.playAnimation()
+            }
+        }
     }
 }
