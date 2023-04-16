@@ -12,9 +12,8 @@ object Constants {
         .addQueryParameter("query", country)
         .build()
 
+    const val KEY_IMAGE_SAVED =  "KEY_IMAGE_SAVED"
     const val SHARED_IMAGE = "My_IMAGE"
     const val KEY_IMAGE = "Key_Image"
 
-    const val SHARED_DATE = "My_DATE"
-    const val KEY_DATE = "Key_DATE"
 }
