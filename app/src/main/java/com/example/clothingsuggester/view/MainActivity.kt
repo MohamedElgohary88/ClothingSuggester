@@ -1,7 +1,6 @@
 package com.example.clothingsuggester.view
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,30 +10,28 @@ import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.example.clothingsuggester.R
 import com.example.clothingsuggester.data.ClothesData
+import com.example.clothingsuggester.data.SharedPrefsManager
 import com.example.clothingsuggester.databinding.ActivityMainBinding
-import com.example.clothingsuggester.model.success.WeatherData
+import com.example.clothingsuggester.response.success.WeatherData
 import com.example.clothingsuggester.presenter.MainPresenter
-import com.example.clothingsuggester.util.Constants
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity(), MainView {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private val presenter = MainPresenter()
     private val clothesData = ClothesData()
+    private lateinit var sharedPrefsManager: SharedPrefsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         presenter.view = this
-        presenter.getRequestUsingOkHttp("tanta")
+        presenter.getWeatherRequest("tanta")
+        sharedPrefsManager = SharedPrefsManager(applicationContext)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("SetTextI18n")
-    override fun setData(result: WeatherData) {
+    override fun setWeatherData(result: WeatherData) {
         val date = result.location.localtime.take(10)
         val temperature = result.current.temperature
         runOnUiThread {
@@ -43,69 +40,34 @@ class MainActivity : AppCompatActivity(), MainView {
             binding.textTown.text = result.location.region
             binding.textDate.text = date
             setClothesImage(temperature, date)
-            Log.d("Mimo", " Api -> $date ------- Locale -> ${getLocalDate()}")
+            Log.d("Mimo", " Api -> $date ------- Locale -> ${presenter.getLocalDate()}")
             setWeatherImage(binding.imageWeather, temperature)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun setClothesImage(temperature: Int, date: String) {
-        if (compareDate(date)) {
-            if (checkImageSaved()) {
+        if (presenter.compareDate(date)) {
+            if (sharedPrefsManager.isImageSaved()) {
                 val drawableId = clothesData.getClothesImage(temperature)
                 binding.clothesImage.setImageResource(drawableId)
-                saveImage(drawableId)
+                sharedPrefsManager.saveImage(drawableId)
             } else {
-                binding.clothesImage.setImageResource(getSavedImage())
+                binding.clothesImage.setImageResource(sharedPrefsManager.getSavedImage())
             }
         } else {
             val drawableId = clothesData.getClothesImage(temperature)
             binding.clothesImage.setImageResource(drawableId)
-            saveImage(drawableId)
+            sharedPrefsManager.saveImage(drawableId)
         }
     }
 
-    private fun saveImage(temperature: Int) {
-        val saveShared =
-            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
-        val editor = saveShared.edit()
-        val drawableId = clothesData.getClothesImage(temperature)
-        editor.putInt(Constants.KEY_IMAGE, drawableId)
-        editor.apply()
-    }
-
-    private fun getSavedImage(): Int {
-        val getShared =
-            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
-        return getShared.getInt(Constants.KEY_IMAGE, 0)
-    }
-
-    private fun checkImageSaved(): Boolean {
-        val sharedPreferences =
-            applicationContext.getSharedPreferences(Constants.MY_SHARED, Context.MODE_PRIVATE)
-        if (sharedPreferences.all.isEmpty()) {
-            return true
-        } else return false
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun compareDate(apiDate: String): Boolean {
-        val localeDate = getLocalDate()
-        return localeDate == apiDate.take(10)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getLocalDate(): String {
-        val currentDate = LocalDate.now()
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        return currentDate.format(dateFormatter)
-    }
-
     override fun onFailure() {
-        setVisibility(binding.lottieNoNetwork, true)
-        setVisibility(binding.constraintTop, false)
-        setVisibility(binding.constraintBottom, false)
-        setVisibility(binding.imageWeather, false)
+        runOnUiThread {
+            setVisibility(binding.lottieNoNetwork, true)
+            setVisibility(binding.constraintTop, false)
+            setVisibility(binding.constraintBottom, false)
+            setVisibility(binding.imageWeather, false)
+        }
     }
 
     private fun setVisibility(view: View, visibility: Boolean) {
@@ -122,10 +84,12 @@ class MainActivity : AppCompatActivity(), MainView {
                 lottieAnimationView.setAnimation(R.raw.rainy)
                 lottieAnimationView.playAnimation()
             }
+
             in 15..25 -> {
                 lottieAnimationView.setAnimation(R.raw.cloudy)
                 lottieAnimationView.playAnimation()
             }
+
             else -> {
                 lottieAnimationView.setAnimation(R.raw.sunny)
                 lottieAnimationView.playAnimation()

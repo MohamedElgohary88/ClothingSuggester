@@ -1,8 +1,9 @@
 package com.example.clothingsuggester.view
 
-import com.example.clothingsuggester.model.success.WeatherData
+import com.example.clothingsuggester.response.success.WeatherData
 
 interface MainView {
-    fun setData(result: WeatherData)
+    fun setWeatherData(result: WeatherData)
     fun onFailure()
+
 }

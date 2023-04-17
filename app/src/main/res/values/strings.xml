@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ClothesSuggester</string>
+    <string name="app_name">ClothingSuggester</string>
     <string name="country_name">Country Name</string>
     <string name="sentence_1">Based on the weather forecast,here\'s what we recommend you wear today</string>
     <string name="sentence_2">Pull To Top to Show Best Clothes</string>

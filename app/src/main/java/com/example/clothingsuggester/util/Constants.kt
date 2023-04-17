@@ -8,7 +8,6 @@ object Constants {
         .scheme("http")
         .host("api.weatherstack.com")
         .addPathSegment("current")
-        .addQueryParameter("access_key", BuildConfig.API_KEY)
         .addQueryParameter("query", country)
         .build()
 
