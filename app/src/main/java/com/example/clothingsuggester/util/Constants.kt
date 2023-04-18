@@ -15,7 +15,7 @@ object Constants {
     const val KEY_IMAGE = "Key_Image"
     const val KEY_DATE = "KEY_DATE"
 
-    const val WINTER_MAX_TEMP = 15
-    const val AUTUMN_MIN_TEMP = 15
-    const val AUTUMN_MAX_TEMP = 25
+    val WINTER_RANGE = Int.MIN_VALUE..15
+    val AUTUMN_RANGE = 15..25
+    val SUMMER_RANGE = 25..Int.MAX_VALUE
 }

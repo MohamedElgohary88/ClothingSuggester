@@ -12,14 +12,14 @@ class MainPresenter(private val sharedPrefsManager: SharedPrefsManager) {
     fun getWeatherRequest(country: String) {
         weatherApi.getWeatherData(country) { result, error ->
             if (error != null) {
-                view.showFailureState()
+                view.showNetworkError()
             } else {
                 result?.let {
                     val temperature = result.current.temperature
                     val date = result.location.localtime.take(10)
                     val drawableId = getClothesImage(temperature, date)
-                    view.setWeatherData(it)
-                    view.setClothesImage(drawableId)
+                    view.showWeatherData(it)
+                    view.showClothesImage(drawableId)
                     sharedPrefsManager.saveDate(date)
                 }
             }
@@ -28,7 +28,7 @@ class MainPresenter(private val sharedPrefsManager: SharedPrefsManager) {
 
     private fun getClothesImage(temperature: Int, date: String): Int {
         val clothesData = ClothesData()
-        return if (compareDate(date)) {
+        return if (isSavedDate(date)) {
             if (sharedPrefsManager.isImageSaved()) {
                 sharedPrefsManager.getSavedImage()
             } else {
@@ -43,7 +43,7 @@ class MainPresenter(private val sharedPrefsManager: SharedPrefsManager) {
         }
     }
 
-    private fun compareDate(apiDate: String): Boolean {
+    private fun isSavedDate(apiDate: String): Boolean {
         val savedDate = sharedPrefsManager.getSavedDate()
         return savedDate == apiDate.take(10)
     }

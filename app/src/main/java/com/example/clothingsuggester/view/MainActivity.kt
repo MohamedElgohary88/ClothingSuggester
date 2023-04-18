@@ -9,9 +9,7 @@ import com.example.clothingsuggester.data.SharedPrefsManager
 import com.example.clothingsuggester.databinding.ActivityMainBinding
 import com.example.clothingsuggester.response.success.WeatherData
 import com.example.clothingsuggester.presenter.MainPresenter
-import com.example.clothingsuggester.util.Constants.AUTUMN_MAX_TEMP
-import com.example.clothingsuggester.util.Constants.AUTUMN_MIN_TEMP
-import com.example.clothingsuggester.util.Constants.WINTER_MAX_TEMP
+import com.example.clothingsuggester.util.Constants
 
 class MainActivity : AppCompatActivity(), MainView {
 
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity(), MainView {
         presenter.getWeatherRequest("tanta")
     }
 
-    override fun setWeatherData(result: WeatherData) {
+    override fun showWeatherData(result: WeatherData) {
         val date = result.location.localtime.take(10)
         val temperature = result.current.temperature
         runOnUiThread {
@@ -42,21 +40,21 @@ class MainActivity : AppCompatActivity(), MainView {
         }
     }
 
-    override fun setClothesImage(drawableId: Int) {
+    override fun showClothesImage(drawableId: Int) {
         binding.clothesImage.setImageResource(drawableId)
     }
 
-    private fun setVisibility(view: View, visibility: Boolean) {
-        view.visibility = if (visibility) { View.VISIBLE } else { View.INVISIBLE }
+    private fun View.setVisibility(visibility: Boolean) {
+        this.visibility = if (visibility) { View.VISIBLE } else { View.GONE }
     }
 
     private fun setWeatherImage(lottieAnimationView: LottieAnimationView, temperature: Int) {
         when (temperature) {
-            in Int.MIN_VALUE..WINTER_MAX_TEMP -> {
+            in Constants.WINTER_RANGE -> {
                 lottieAnimationView.setAnimation(R.raw.rainy)
                 lottieAnimationView.playAnimation()
             }
-            in AUTUMN_MIN_TEMP..AUTUMN_MAX_TEMP -> {
+            in Constants.AUTUMN_RANGE -> {
                 lottieAnimationView.setAnimation(R.raw.cloudy)
                 lottieAnimationView.playAnimation()
             }
@@ -67,12 +65,12 @@ class MainActivity : AppCompatActivity(), MainView {
         }
     }
 
-    override fun showFailureState() {
+    override fun showNetworkError() {
         runOnUiThread {
-            setVisibility(binding.lottieNoNetwork, true)
-            setVisibility(binding.constraintTop, false)
-            setVisibility(binding.constraintBottom, false)
-            setVisibility(binding.imageWeather, false)
+            binding.lottieNoNetwork.setVisibility(true)
+            binding.constraintTop.setVisibility( false)
+            binding.constraintBottom.setVisibility(false)
+            binding.imageWeather.setVisibility(false)
         }
     }
 }

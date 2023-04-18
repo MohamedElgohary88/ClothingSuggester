@@ -1,7 +1,6 @@
 package com.example.clothingsuggester.api
 
 import com.example.clothingsuggester.response.success.WeatherData
-import com.example.clothingsuggester.util.ApiKeyInterceptor
 import com.example.clothingsuggester.util.Constants
 import com.google.gson.Gson
 import okhttp3.Call

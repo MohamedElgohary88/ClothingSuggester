@@ -1,4 +1,4 @@
-package com.example.clothingsuggester.util
+package com.example.clothingsuggester.api
 
 import com.example.clothingsuggester.BuildConfig
 import okhttp3.Interceptor

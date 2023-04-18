@@ -1,9 +1,10 @@
 package com.example.clothingsuggester.view
 
+import androidx.annotation.DrawableRes
 import com.example.clothingsuggester.response.success.WeatherData
 
 interface MainView {
-    fun setWeatherData(result: WeatherData)
-    fun showFailureState()
-    fun setClothesImage(drawableId: Int)
+    fun showWeatherData(result: WeatherData)
+    fun showNetworkError()
+    fun showClothesImage(@DrawableRes drawableId: Int)
 }
