@@ -1,11 +1,8 @@
 package com.example.clothingsuggester.view
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.example.clothingsuggester.R
@@ -18,41 +15,44 @@ import com.example.clothingsuggester.presenter.MainPresenter
 class MainActivity : AppCompatActivity(), MainView {
 
     private lateinit var binding: ActivityMainBinding
-    private val presenter = MainPresenter()
+    private val sharedPrefsManager: SharedPrefsManager by lazy {
+        SharedPrefsManager(applicationContext)
+    }
+    private val presenter: MainPresenter by lazy {
+        MainPresenter(sharedPrefsManager)
+    }
     private val clothesData = ClothesData()
-    private lateinit var sharedPrefsManager: SharedPrefsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         presenter.view = this
-        presenter.getWeatherRequest("tanta")
-        sharedPrefsManager = SharedPrefsManager(applicationContext)
+        presenter.getWeatherRequest("canada")
     }
 
     override fun setWeatherData(result: WeatherData) {
         val date = result.location.localtime.take(10)
         val temperature = result.current.temperature
         runOnUiThread {
+            setWeatherImage(binding.imageWeather, temperature)
             binding.textTemperature.text = " $temperature C"
             binding.textStatus.text = result.current.weather_descriptions[0]
             binding.textTown.text = result.location.region
             binding.textDate.text = date
             setClothesImage(temperature, date)
             Log.d("Mimo", " Api -> $date ------- Locale -> ${presenter.getLocalDate()}")
-            setWeatherImage(binding.imageWeather, temperature)
         }
     }
 
     private fun setClothesImage(temperature: Int, date: String) {
         if (presenter.compareDate(date)) {
             if (sharedPrefsManager.isImageSaved()) {
+                binding.clothesImage.setImageResource(sharedPrefsManager.getSavedImage())
+            } else {
                 val drawableId = clothesData.getClothesImage(temperature)
                 binding.clothesImage.setImageResource(drawableId)
                 sharedPrefsManager.saveImage(drawableId)
-            } else {
-                binding.clothesImage.setImageResource(sharedPrefsManager.getSavedImage())
             }
         } else {
             val drawableId = clothesData.getClothesImage(temperature)

@@ -13,5 +13,6 @@ object Constants {
 
     const val MY_SHARED = "My_SHARED"
     const val KEY_IMAGE = "Key_Image"
+    const val KEY_DATE = "KEY_DATE"
 
 }

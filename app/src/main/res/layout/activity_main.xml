@@ -168,5 +168,4 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/no_wifi" />
 
-
 </androidx.constraintlayout.motion.widget.MotionLayout>
