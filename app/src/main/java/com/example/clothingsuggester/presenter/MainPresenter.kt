@@ -1,34 +1,50 @@
 package com.example.clothingsuggester.presenter
 
-import android.icu.util.Calendar
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.clothingsuggester.api.WeatherApi
+import com.example.clothingsuggester.data.ClothesData
+import com.example.clothingsuggester.data.SharedPrefsManager
 import com.example.clothingsuggester.view.MainView
-import java.text.SimpleDateFormat
-import java.util.Locale
 
-class MainPresenter() {
-    var weatherApi: WeatherApi = WeatherApi()
+class MainPresenter(private val sharedPrefsManager: SharedPrefsManager) {
+    private val weatherApi: WeatherApi = WeatherApi()
     lateinit var view: MainView
+
     fun getWeatherRequest(country: String) {
         weatherApi.getWeatherData(country) { result, error ->
             if (error != null) {
-                view.onFailure()
+                view.showFailureState()
             } else {
-                result?.let { view.setWeatherData(it) }
+                result?.let {
+                    val temperature = result.current.temperature
+                    val date = result.location.localtime.take(10)
+                    val drawableId = getClothesImage(temperature, date)
+                    view.setWeatherData(it)
+                    view.setClothesImage(drawableId)
+                    sharedPrefsManager.saveDate(date)
+                }
             }
         }
     }
 
-    fun compareDate(apiDate: String): Boolean {
-        val localeDate = getLocalDate()
-        return localeDate == apiDate.take(10)
+    private fun getClothesImage(temperature: Int, date: String): Int {
+        val clothesData = ClothesData()
+        return if (compareDate(date)) {
+            if (sharedPrefsManager.isImageSaved()) {
+                sharedPrefsManager.getSavedImage()
+            } else {
+                val drawableId = clothesData.getClothesImage(temperature)
+                sharedPrefsManager.saveImage(drawableId)
+                drawableId
+            }
+        } else {
+            val drawableId = clothesData.getClothesImage(temperature)
+            sharedPrefsManager.saveImage(drawableId)
+            drawableId
+        }
     }
 
-    fun getLocalDate(): String {
-        val calendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return dateFormat.format(calendar.time)
+    private fun compareDate(apiDate: String): Boolean {
+        val savedDate = sharedPrefsManager.getSavedDate()
+        return savedDate == apiDate.take(10)
     }
 }

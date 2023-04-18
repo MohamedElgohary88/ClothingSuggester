@@ -1,6 +1,9 @@
 package com.example.clothingsuggester.data
 
 import com.example.clothingsuggester.R
+import com.example.clothingsuggester.util.Constants.AUTUMN_MAX_TEMP
+import com.example.clothingsuggester.util.Constants.AUTUMN_MIN_TEMP
+import com.example.clothingsuggester.util.Constants.WINTER_MAX_TEMP
 
 class ClothesData {
     private val winterClothes = mutableListOf<Int>()
@@ -49,9 +52,5 @@ class ClothesData {
             else -> summerClothes.random()
         }
     }
-    companion object {
-        const val WINTER_MAX_TEMP = 15
-        const val AUTUMN_MIN_TEMP = 15
-        const val AUTUMN_MAX_TEMP = 25
-    }
+
 }
