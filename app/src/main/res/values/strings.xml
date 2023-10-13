@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ClothingSuggester</string>
+    <string name="country_name">Country Name</string>
+    <string name="sentence_1">Based on the weather forecast,here\'s what we recommend you wear today</string>
+    <string name="sentence_2">Pull To Top to Show Best Clothes</string>
+    <string name="tanta">Tanta</string>
+    <string name="_32">32</string>
+    <string name="mostly_clear">Mostly Clear</string>
+    <string name="_15_4_2023">15-4-2023</string>
 </resources>
